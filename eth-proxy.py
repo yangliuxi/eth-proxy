@@ -5,6 +5,7 @@ import time
 import os
 import sys
 import socket
+import signal
 
 from stratum import settings
 import stratum.logger
@@ -48,6 +49,12 @@ def ping(f):
             reactor.callLater(5, ping, f)
     except Exception:
         pass
+
+def restart(signum, frame):
+    python = sys.executable
+    os.execl(python, python, * sys.argv)
+
+signal.signal(signal.SIGHUP, restart)
 
 @defer.inlineCallbacks
 def on_connect(f):
